@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Maximize, Minimize } from 'lucide-react';
+import confetti from 'canvas-confetti';
 
 export default function SlotMachine({ names, addWinner }) {
   const [isSpinning, setIsSpinning] = useState(false);
@@ -27,16 +28,16 @@ export default function SlotMachine({ names, addWinner }) {
       // Sharp, percussive tick sound
       osc.type = 'square';
       osc.frequency.setValueAtTime(150, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.05);
+      osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.02);
       
       // Louder initial volume, quick fade
       gain.gain.setValueAtTime(0.2, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.02);
       
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 0.05);
+      osc.stop(ctx.currentTime + 0.02);
     } catch (e) {
       console.log('Audio play failed:', e);
     }
@@ -59,9 +60,41 @@ export default function SlotMachine({ names, addWinner }) {
         osc.start(ctx.currentTime + (i * 0.1));
         osc.stop(ctx.currentTime + 2);
       });
+      
+      // Play kids cheering "Yay!" sound
+      const yayAudio = new Audio('./yay.mp3');
+      yayAudio.volume = 1.0;
+      yayAudio.play().catch(e => console.log('Yay audio play failed:', e));
+      
     } catch (e) {
       console.log('Audio play failed:', e);
     }
+  };
+
+  const fireConfetti = () => {
+    const duration = 3000;
+    const end = Date.now() + duration;
+
+    (function frame() {
+      confetti({
+        particleCount: 5,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#2563eb', '#16a34a', '#ea580c', '#ca8a04', '#dc2626', '#9333ea']
+      });
+      confetti({
+        particleCount: 5,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#2563eb', '#16a34a', '#ea580c', '#ca8a04', '#dc2626', '#9333ea']
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    }());
   };
 
   const spin = useCallback(() => {
@@ -93,7 +126,7 @@ export default function SlotMachine({ names, addWinner }) {
 
       if (progress < 1) {
         // We update the display name rapidly. We slow it down at the end.
-        const currentInterval = 30 + Math.pow(progress, 3) * 370; 
+        const currentInterval = 50 + Math.pow(progress, 3) * 350; 
         
         if (now - lastUpdate > currentInterval) {
           setDisplayName(pickRandomName());
@@ -109,6 +142,7 @@ export default function SlotMachine({ names, addWinner }) {
         setWinner(winningName);
         
         playWin();
+        fireConfetti();
 
         // Add to winners (this removes from names pool)
         setTimeout(() => {
@@ -153,14 +187,14 @@ export default function SlotMachine({ names, addWinner }) {
       const houseColorClass = getHouseColorClass(house);
       
       return (
-        <div className="flex flex-col items-center justify-center gap-3 md:gap-4 w-full">
-          <div className="text-2xl md:text-3xl text-slate-700 font-mono font-bold tracking-widest bg-slate-100 px-5 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+        <div className={`flex flex-col items-center justify-center gap-3 md:gap-4 w-full transition-all duration-700 ${winner === name ? 'scale-[1.15] drop-shadow-2xl translate-y-[-10px]' : ''}`}>
+          <div className={`text-2xl md:text-3xl text-slate-700 font-mono font-bold tracking-widest bg-slate-100 px-5 py-1.5 rounded-lg border border-slate-200 shadow-sm transition-all duration-700 ${winner === name ? 'bg-yellow-100 border-yellow-300 text-yellow-800 scale-110 shadow-lg' : ''}`}>
             {id}
           </div>
-          <div className="text-3xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight my-1">
+          <div className={`text-3xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight my-1 transition-all duration-700 ${winner === name ? 'text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600' : ''}`}>
             {fullName}
           </div>
-          <div className={`text-lg md:text-xl font-bold tracking-widest uppercase px-6 py-2 rounded-full border ${houseColorClass}`}>
+          <div className={`text-lg md:text-xl font-bold tracking-widest uppercase px-6 py-2 rounded-full border transition-all duration-700 ${houseColorClass} ${winner === name ? 'scale-110 shadow-md ring-4 ring-offset-2 ring-indigo-100' : ''}`}>
             {house}
           </div>
         </div>
@@ -168,7 +202,7 @@ export default function SlotMachine({ names, addWinner }) {
     }
     
     // Fallback
-    return <div className="text-3xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight">{name}</div>;
+    return <div className={`text-3xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight transition-all duration-700 ${winner === name ? 'scale-125 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 drop-shadow-xl' : ''}`}>{name}</div>;
   };
 
   return (
@@ -177,7 +211,7 @@ export default function SlotMachine({ names, addWinner }) {
       {/* Slot Window */}
       <div className="relative bg-white rounded-3xl p-3 md:p-5 mb-6 w-full max-w-4xl xl:max-w-5xl shadow-xl border border-slate-200 transition-all">
         
-        <div className="bg-slate-50 rounded-2xl p-4 md:p-8 border border-slate-100 shadow-inner relative overflow-hidden flex items-center justify-center min-h-[250px] h-[35vh] lg:h-[40vh] max-h-[380px]">
+        <div className="bg-slate-50 rounded-2xl p-4 md:p-8 border border-slate-100 shadow-inner relative overflow-hidden flex items-center justify-center min-h-[300px] h-[40vh] lg:h-[45vh] max-h-[450px]">
           
           <div className={`relative z-20 text-center w-full px-4 transition-all duration-75 flex items-center justify-center ${
             isSpinning ? 'blur-[1px] scale-y-110 opacity-70' : 

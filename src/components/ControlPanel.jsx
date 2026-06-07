@@ -10,6 +10,7 @@ export default function ControlPanel({
   removeName, 
   editName,
   clearWinners,
+  removeWinner,
   clearNames
 }) {
   const [activeTab, setActiveTab] = useState('names'); // 'names' or 'winners'
@@ -314,13 +315,20 @@ export default function ControlPanel({
                 winners.map((winner, index) => (
                   <div 
                     key={`winner-${index}`} 
-                    className="flex items-center gap-4 bg-blue-50 border border-blue-100 p-3 rounded-xl shadow-sm"
+                    className="flex items-center gap-4 bg-blue-50 border border-blue-100 p-3 rounded-xl shadow-sm group"
                   >
-                    <div className="flex items-center justify-center bg-blue-600 text-white w-8 h-8 rounded-full font-bold shadow-sm">
+                    <div className="flex items-center justify-center bg-blue-600 text-white w-8 h-8 rounded-full font-bold shadow-sm flex-shrink-0">
                       {index + 1}
                     </div>
                     <span className="text-slate-900 font-bold text-lg truncate flex-1" title={winner}>{winner}</span>
-                    <Trophy size={20} className="text-yellow-500" />
+                    <button 
+                      onClick={() => { if(confirm(`Remove ${winner.split(/\s+/)[0]} from winners and return to pool?`)) removeWinner(winner) }}
+                      className="text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-2 flex-shrink-0"
+                      title="Remove from winners and return to pool"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                    <Trophy size={20} className="text-yellow-500 flex-shrink-0" />
                   </div>
                 ))
               )}

@@ -15,6 +15,7 @@ export default function Home() {
     editName,
     addWinner,
     clearWinners,
+    removeWinner,
     clearNames,
     isLoaded
   } = useLuckyDraw();
@@ -97,6 +98,7 @@ export default function Home() {
           removeName={removeName}
           editName={editName}
           clearWinners={clearWinners}
+          removeWinner={removeWinner}
           clearNames={clearNames}
         />
       </div>

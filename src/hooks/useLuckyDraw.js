@@ -55,7 +55,15 @@ export function useLuckyDraw() {
   };
 
   const clearWinners = () => {
+    if (winners.length > 0) {
+      addNames(winners);
+    }
     setWinners([]);
+  };
+
+  const removeWinner = (winnerToRemove) => {
+    setWinners(prev => prev.filter(w => w !== winnerToRemove));
+    addNames([winnerToRemove]); // Return to the pool
   };
 
   const clearNames = () => {
@@ -85,6 +93,7 @@ export function useLuckyDraw() {
     editName,
     addWinner,
     clearWinners,
+    removeWinner,
     clearNames,
     isLoaded
   };
