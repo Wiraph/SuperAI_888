@@ -5,7 +5,7 @@ import confetti from 'canvas-confetti';
 
 export default function SlotMachine({ names, addWinner }) {
   const [isSpinning, setIsSpinning] = useState(false);
-  const [displayName, setDisplayName] = useState('SUPER AI 888');
+  const [displayName, setDisplayName] = useState('SUPER AI 666 SUPER LUCKY DRAW');
   const [winner, setWinner] = useState(null);
   
   const audioCtxRef = useRef(null);
@@ -169,6 +169,20 @@ export default function SlotMachine({ names, addWinner }) {
 
   const renderDisplayName = (name) => {
     if (!name) return null;
+    
+    if (name === 'SUPER AI 666 SUPER LUCKY DRAW') {
+      return (
+        <div className="flex flex-col items-center justify-center gap-2 md:gap-4 w-full">
+          <div className="text-4xl md:text-6xl lg:text-7xl font-bold text-slate-900 leading-tight">
+            SUPER AI 666
+          </div>
+          <div className="text-xl md:text-2xl lg:text-3xl font-semibold text-slate-500 tracking-widest uppercase mt-2">
+            SUPER LUCKY DRAW
+          </div>
+        </div>
+      );
+    }
+
     const parts = name.trim().split(/\s+/);
     
     // Standard format: ID Title First Last House (at least 4 parts)
@@ -182,7 +196,16 @@ export default function SlotMachine({ names, addWinner }) {
         house = fullNameParts.pop() + ' ' + house;
       }
       
-      const fullName = fullNameParts.join(' ');
+      // Extract nickname (first part of full name) and real name
+      let nickname = '';
+      let realName = '';
+      
+      if (fullNameParts.length >= 2) {
+        nickname = fullNameParts[0];
+        realName = fullNameParts.slice(1).join(' ');
+      } else {
+        realName = fullNameParts.join(' ');
+      }
       
       const houseColorClass = getHouseColorClass(house);
       
@@ -191,8 +214,15 @@ export default function SlotMachine({ names, addWinner }) {
           <div className={`text-2xl md:text-3xl text-slate-700 font-mono font-bold tracking-widest bg-slate-100 px-5 py-1.5 rounded-lg border border-slate-200 shadow-sm transition-all duration-700 ${winner === name ? 'bg-yellow-100 border-yellow-300 text-yellow-800 scale-110 shadow-lg' : ''}`}>
             {id}
           </div>
-          <div className={`text-3xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight my-1 transition-all duration-700 ${winner === name ? 'text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600' : ''}`}>
-            {fullName}
+          <div className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight my-1 transition-all duration-700 flex flex-wrap justify-center items-center gap-x-3 md:gap-x-4 gap-y-2">
+            {nickname && (
+              <span className={winner === name ? 'text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-500 drop-shadow-sm' : isSpinning ? 'text-slate-900' : 'text-indigo-600'}>
+                {nickname}
+              </span>
+            )}
+            <span className={winner === name ? 'text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 drop-shadow-sm' : 'text-slate-900'}>
+              {realName}
+            </span>
           </div>
           <div className={`text-lg md:text-xl font-bold tracking-widest uppercase px-6 py-2 rounded-full border transition-all duration-700 ${houseColorClass} ${winner === name ? 'scale-110 shadow-md ring-4 ring-offset-2 ring-indigo-100' : ''}`}>
             {house}
@@ -211,7 +241,7 @@ export default function SlotMachine({ names, addWinner }) {
       {/* Slot Window */}
       <div className="relative bg-white rounded-3xl p-3 md:p-5 mb-6 w-full max-w-4xl xl:max-w-5xl shadow-xl border border-slate-200 transition-all">
         
-        <div className="bg-slate-50 rounded-2xl p-4 md:p-8 border border-slate-100 shadow-inner relative overflow-hidden flex items-center justify-center min-h-[300px] h-[40vh] lg:h-[45vh] max-h-[450px]">
+        <div className="bg-slate-50 rounded-2xl p-4 md:p-8 border border-slate-100 shadow-inner relative overflow-hidden flex items-center justify-center min-h-[380px] h-[50vh] lg:h-[55vh] max-h-[550px]">
           
           <div className={`relative z-20 text-center w-full px-4 transition-all duration-75 flex items-center justify-center ${
             isSpinning ? 'blur-[1px] scale-y-110 opacity-70' : 

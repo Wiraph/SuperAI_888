@@ -17,6 +17,23 @@ export default function ControlPanel({
   const [newName, setNewName] = useState('');
   const fileInputRef = useRef(null);
 
+  const renderListItemName = (nameStr, isWinner = false) => {
+    const parts = nameStr.trim().split(/\s+/);
+    if (parts.length >= 4) {
+      const id = parts[0];
+      const nickname = parts[1];
+      const rest = parts.slice(2).join(' ');
+      return (
+        <span className={`truncate flex-1 flex gap-2 ${isWinner ? 'font-bold text-lg' : 'font-medium'} text-slate-700`} title={nameStr}>
+          <span className="text-slate-400 font-mono text-[0.9em] self-center">{id}</span>
+          <span className="text-indigo-600">{nickname}</span>
+          <span className={isWinner ? 'text-slate-900' : ''}>{rest}</span>
+        </span>
+      );
+    }
+    return <span className={`truncate flex-1 ${isWinner ? 'font-bold text-lg text-slate-900' : 'font-medium text-slate-700'}`} title={nameStr}>{nameStr}</span>;
+  };
+
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -255,7 +272,7 @@ export default function ControlPanel({
                       key={`${name}-${index}`} 
                       className="flex justify-between items-center bg-white border border-slate-200 p-3 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
                     >
-                      <span className="text-slate-700 truncate flex-1 font-medium" title={name}>{name}</span>
+                      {renderListItemName(name, false)}
                       <div className="flex gap-1 ml-2">
                         <button 
                           onClick={() => {
@@ -320,7 +337,7 @@ export default function ControlPanel({
                     <div className="flex items-center justify-center bg-blue-600 text-white w-8 h-8 rounded-full font-bold shadow-sm flex-shrink-0">
                       {index + 1}
                     </div>
-                    <span className="text-slate-900 font-bold text-lg truncate flex-1" title={winner}>{winner}</span>
+                    {renderListItemName(winner, true)}
                     <button 
                       onClick={() => { if(confirm(`Remove ${winner.split(/\s+/)[0]} from winners and return to pool?`)) removeWinner(winner) }}
                       className="text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-2 flex-shrink-0"

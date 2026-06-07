@@ -56,13 +56,16 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 relative overflow-hidden flex flex-col md:flex-row font-sans">
-      
+
       {/* Header Logo */}
-      <div className={`absolute top-6 left-6 z-20 flex items-center gap-4 transition-all duration-500 ${isFullscreen ? 'opacity-0 -translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'}`}>
+      <div className={`absolute z-20 flex transition-all duration-700 ${isFullscreen
+          ? 'top-6 left-1/2 -translate-x-1/2 flex-col items-center gap-2 scale-105'
+          : 'top-6 left-6 flex-row items-center gap-4 scale-100'
+        }`}>
         <div className="h-14 w-auto flex items-center justify-center">
           <img src={logoImg.src} alt="SUPER AI" className="h-full w-auto object-contain drop-shadow-sm" />
         </div>
-        <div className="hidden sm:block">
+        <div className={`hidden sm:block ${isFullscreen ? 'text-center' : ''}`}>
           <h2 className="text-xl font-bold tracking-tight text-slate-900">
             SUPER AI ENGINEER
           </h2>
@@ -71,27 +74,26 @@ export default function Home() {
       </div>
 
       {/* Main Slot Machine Area */}
-      <div className={`flex-1 relative z-10 flex items-center justify-center p-6 transition-all duration-500 ${isFullscreen ? 'pt-6' : 'pt-20 md:pt-24'}`}>
-        <button 
+      <div className={`flex-1 relative z-10 flex items-center justify-center p-6 transition-all duration-500 ${isFullscreen ? 'pt-36 lg:pt-44' : 'pt-20 md:pt-24'}`}>
+        <button
           onClick={toggleFullscreen}
           className="absolute top-6 right-6 z-50 p-3 rounded-full bg-white border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-sm"
           title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
         >
           {isFullscreen ? <Minimize size={24} /> : <Maximize size={24} />}
         </button>
-        <SlotMachine 
-          names={names} 
-          addWinner={addWinner} 
+        <SlotMachine
+          names={names}
+          addWinner={addWinner}
         />
       </div>
 
       {/* Control Panel Sidebar */}
-      <div className={`p-0 relative z-10 flex-shrink-0 md:h-screen transition-all duration-500 origin-right ${
-        isFullscreen 
-          ? 'w-0 opacity-0 overflow-hidden pointer-events-none scale-x-0 absolute right-0' 
+      <div className={`p-0 relative z-10 flex-shrink-0 md:h-screen transition-all duration-500 origin-right ${isFullscreen
+          ? 'w-0 opacity-0 overflow-hidden pointer-events-none scale-x-0 absolute right-0'
           : 'w-full md:w-[400px] lg:w-[450px] opacity-100 scale-x-100 bg-white border-l border-slate-200 shadow-xl'
-      }`}>
-        <ControlPanel 
+        }`}>
+        <ControlPanel
           names={names}
           winners={winners}
           addNames={addNames}
@@ -101,6 +103,11 @@ export default function Home() {
           removeWinner={removeWinner}
           clearNames={clearNames}
         />
+      </div>
+
+      {/* Watermark */}
+      <div className="fixed bottom-3 right-4 z-0 text-slate-500 font-medium tracking-wider uppercase text-xs select-none pointer-events-none">
+        Develop by NongFa อนาคต ผบ.ทบ.
       </div>
     </main>
   );
